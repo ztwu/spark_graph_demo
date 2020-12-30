@@ -79,8 +79,7 @@ object graphxJoindemo {
 
     println("**********************************************************")
     println("找出年纪最大的follower：")
-    val oldestFollower: VertexRDD[(String, Int)] = userGraph.aggregateMessages[(String,
-      Int)](
+    val oldestFollower: VertexRDD[(String, Int)] = userGraph.aggregateMessages[(String, Int)](
       // 将源顶点的属性发送给目标顶点，map 过程
       et => et.sendToDst((et.srcAttr.name,et.srcAttr.age)),
       // 得到最大follower，reduce 过程

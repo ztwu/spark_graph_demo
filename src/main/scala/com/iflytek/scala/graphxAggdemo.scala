@@ -70,7 +70,8 @@ object graphxAggdemo {
     val g = Pregel(
       graph.mapVertices((vid, vd) => (0, vid)),
       (0, Long.MinValue),
-      activeDirection = EdgeDirection.Out)(
+      activeDirection = EdgeDirection.Out
+    )(
         (id: VertexId, vd: (Int, Long), a: (Int, Long)) => math.max(vd._1, a._1) match {
           case vd._1 => vd
           case a._1 => a
@@ -87,18 +88,23 @@ object graphxAggdemo {
 
     // 面向对象
     val g2 = graph.mapVertices(
-      (vid, vd) => (0, vid)).pregel((0, Long.MinValue),
-      activeDirection = EdgeDirection.Out)(
-        (id: VertexId, vd: (Int, Long), a: (Int, Long)) => math.max(vd._1, a._1) match {
-          case vd._1 => vd
-          case a._1 => a
-        },
-        (et: EdgeTriplet[(Int, Long), Int]) => Iterator((et.dstId, (et.srcAttr._1 + 1, et.srcAttr._2))),
-        (a: (Int, Long), b: (Int, Long)) => math.max(a._1, b._1) match {
-          case a._1 => a
-          case b._1 => b
-        }
-    )
+        (vid, vd) => (0, vid)
+      ).pregel(
+        (0, Long.MinValue),
+        activeDirection = EdgeDirection.Out
+      )(
+          (id: VertexId, vd: (Int, Long), a: (Int, Long)) => math.max(vd._1, a._1) match {
+            case vd._1 => vd
+            case a._1 => a
+          },
+          (et: EdgeTriplet[(Int, Long), Int]) => {
+            Iterator((et.dstId, (et.srcAttr._1 + 1, et.srcAttr._2)))
+          },
+          (a: (Int, Long), b: (Int, Long)) => math.max(a._1, b._1) match {
+            case a._1 => a
+            case b._1 => b
+          }
+      )
     g2.vertices.foreach(m=>println(s"原顶点${m._2._2}到目标顶点${m._1},最远经过${m._2._1}步"))
 
     sc.stop()
